@@ -6,6 +6,18 @@
 #define BUILD_INFORMATION "locally built"
 #endif
 
+/////////
+// Notes:
+// semicolon and quote swapped
+// any key is `one-shot command (leftgui) key
+// butterfly is spacebar
+// LED => backspace
+// left thumb key 1 => Shift
+// right thumb key 4 => Shift
+
+
+
+
 
 /**
  * These #include directives pull in the Kaleidoscope firmware core,
@@ -25,15 +37,15 @@
 // Support for controlling the keyboard's LEDs
 #include "Kaleidoscope-LEDControl.h"
 
-// Support for "Numpad" mode, which is mostly just the Numpad specific LED mode
-#include "Kaleidoscope-NumPad.h"
+// Support for "Numlock" mode, which is mostly just the Numlock specific LED mode
+#include "Kaleidoscope-Numlock.h"
 
 // Support for an "LED off mode"
 #include "LED-Off.h"
 
 // Support for the "Boot greeting" effect, which pulses the 'LED' button for 10s
 // when the keyboard is connected to a computer (or that computer is powered on)
-#include "Kaleidoscope-LEDEffect-BootGreeting.h"
+#include "Kaleidoscope-LEDEffect-BootGreeting.h"22
 
 // Support for LED modes that set all LEDs to a single color
 #include "Kaleidoscope-LEDEffect-SolidColor.h"
@@ -56,6 +68,11 @@
 // Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-Model01-TestMode.h"
 
+// Benji's customizations
+#include <Kaleidoscope-OneShot.h>
+#include <Kaleidoscope-Escape-OneShot.h>
+#include <Kaleidoscope-ShapeShifter.h>
+#include <Kaleidoscope-Macros.h>
 
 /** This 'enum' is a list of all the macros used by the Model 01's firmware
   * The names aren't particularly important. What is important is that each
@@ -71,11 +88,21 @@
   */
 
 enum { MACRO_VERSION_INFO,
-       MACRO_ANY
+       MACRO_ANY,
+       MACRO_PD_LEFT_CURLY,
+       MACRO_PD_RIGHT_CURLY,
+       MACRO_PD_LEFT_PAREN,
+       MACRO_PD_ASTERISK,
+       MACRO_PD_RIGHT_PAREN,
+       MACRO_PD_PLUS,
+       MACRO_PD_EXCLAMATION,
+       MACRO_PD_CUT,
+       MACRO_PD_COPY,
+       MACRO_PD_PASTE,
+       MACRO_PD_AT
      };
 
-
-
+//
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
   * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
   * keymap.
@@ -115,10 +142,9 @@ enum { MACRO_VERSION_INFO,
   * The third one is layer 2.
   * This 'enum' lets us use names like QWERTY, FUNCTION, and NUMPAD in place of
   * the numbers 0, 1 and 2.
-  *
   */
 
-enum { QWERTY, NUMPAD, FUNCTION }; // layers
+enum { PDVORAK, FUNCTION, NUMPAD }; // layers
 
 /* This comment temporarily turns off astyle's indent enforcement
  *   so we can make the keymaps actually resemble the physical key layout better
@@ -126,25 +152,39 @@ enum { QWERTY, NUMPAD, FUNCTION }; // layers
 // *INDENT-OFF*
 
 const Key keymaps[][ROWS][COLS] PROGMEM = {
-
-  [QWERTY] = KEYMAP_STACKED
-  (___,          Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
-   Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
-   Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
-   Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
-   Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
+  [PDVORAK] = KEYMAP_STACKED
+  (___,          Key_LeftBracket,         M(MACRO_PD_LEFT_CURLY),     M(MACRO_PD_RIGHT_CURLY),      M(MACRO_PD_LEFT_PAREN), Key_Equals, Key_Backspace,
+   Key_Backtick, Key_Semicolon,     Key_Comma, Key_Period, Key_P, Key_Y, Key_Tab,
+   Key_PageUp,   Key_A,         Key_O,     Key_E,      Key_U, Key_I,
+   Key_PageDown, Key_Quote, Key_Q,     Key_J,      Key_K, Key_X, Key_Escape,
+   Key_LeftShift, Key_Backspace, Key_LeftGui, Key_LeftControl,
    ShiftToLayer(FUNCTION),
 
-   M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         LockLayer(NUMPAD),
-   Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
-                  Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
-   Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
-   Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
+   OSM(LeftGui),   M(MACRO_PD_ASTERISK), M(MACRO_PD_RIGHT_PAREN), M(MACRO_PD_PLUS), Key_RightBracket, M(MACRO_PD_EXCLAMATION), Key_KeypadNumLock,
+   Key_Enter,      Key_F, Key_G, Key_C, Key_R, Key_L, Key_Slash,
+                   Key_D, Key_H, Key_T, Key_N, Key_S, Key_Minus,
+   Key_Spacebar,   Key_B, Key_M, Key_W, Key_V, Key_Z, M(MACRO_PD_AT),
+   Key_RightControl, Key_LeftAlt, Key_Spacebar, Key_RightShift,
    ShiftToLayer(FUNCTION)),
+
+  [FUNCTION] =  KEYMAP_STACKED
+  (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           XXX,
+   Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseScrollUp,
+   Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
+   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  Key_mouseScrollDn,
+   ___, Key_Delete, ___, ___,
+   ___,
+
+   M(MACRO_PD_CUT), Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
+   M(MACRO_PD_COPY),    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_Find,
+                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  ___,              ___,
+   M(MACRO_PD_PASTE),          Key_Mute,               Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
+   ___, ___, Key_Enter, ___,
+   ___),
 
 
   [NUMPAD] =  KEYMAP_STACKED
-  (___, ___, ___, ___, ___, ___, ___,
+  (___, ___, ___, ___, ___, ___, Key_LEDEffectNext,
    ___, ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___, ___, ___, ___,
@@ -156,25 +196,14 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
                            ___, Key_Keypad1, Key_Keypad2,   Key_Keypad3,        Key_Equals,         Key_Quote,
    ___,                    ___, Key_Keypad0, Key_KeypadDot, Key_KeypadMultiply, Key_KeypadDivide,   Key_Enter,
    ___, ___, ___, ___,
-   ___),
-
-  [FUNCTION] =  KEYMAP_STACKED
-  (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           XXX,
-   Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
-   Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
-   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  Key_mouseWarpSE,
-   ___, Key_Delete, ___, ___,
-   ___,
-
-   Consumer_ScanPreviousTrack, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
-   Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F12,
-                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  ___,              ___,
-   Key_PcApplication,          Consumer_Mute,          Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
-   ___, ___, Key_Enter, ___,
    ___)
-
 };
 
+static const kaleidoscope::ShapeShifter::dictionary_t shape_shift_dictionary[] PROGMEM = {
+ {Key_LeftBracket, Key_7},
+ {Key_4, Key_1},
+ {Key_NoKey, Key_NoKey},
+};
 /* Re-enable astyle's indent enforcement */
 // *INDENT-ON*
 
@@ -220,6 +249,7 @@ static void anyKeyMacro(uint8_t keyState) {
 
  */
 
+
 const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   switch (macroIndex) {
 
@@ -230,6 +260,66 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   case MACRO_ANY:
     anyKeyMacro(keyState);
     break;
+
+  case MACRO_PD_LEFT_CURLY:
+    if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("{"));
+    }
+    break;
+
+  case MACRO_PD_RIGHT_CURLY:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("}"));
+    }
+    break;
+
+  case MACRO_PD_LEFT_PAREN:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("("));
+    }
+    break;
+
+  case MACRO_PD_ASTERISK:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("*"));
+    }
+    break;
+
+  case MACRO_PD_AT:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("@"));
+    }
+    break;
+
+  case MACRO_PD_RIGHT_PAREN:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR(")"));
+    }
+    break;
+
+  case MACRO_PD_PLUS:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("+"));
+    }
+    break;
+
+  case MACRO_PD_EXCLAMATION:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("!"));
+    }
+    break;
+
+  case MACRO_PD_CUT:
+    return MACRODOWN(D(LeftGui), T(X), U(LeftGui));
+    break;
+
+  case MACRO_PD_COPY:
+    return MACRODOWN(D(LeftGui), T(C), U(LeftGui));
+    break;
+
+  case MACRO_PD_PASTE:
+    return MACRODOWN(D(LeftGui), T(V), U(LeftGui));
+    break;
   }
   return MACRO_NONE;
 }
@@ -239,8 +329,6 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 // These 'solid' color effect definitions define a rainbow of
 // LED color modes calibrated to draw 500mA or less on the
 // Keyboardio Model 01.
-
-
 static kaleidoscope::LEDSolidColor solidRed(160, 0, 0);
 static kaleidoscope::LEDSolidColor solidOrange(140, 70, 0);
 static kaleidoscope::LEDSolidColor solidYellow(130, 100, 0);
@@ -301,20 +389,24 @@ void setup() {
     // The stalker effect lights up the keys you've pressed recently
     &StalkerEffect,
 
-    // The numpad plugin is responsible for lighting up the 'numpad' mode
+    // The numlock plugin is responsible for lighting up the 'numpad' mode
     // with a custom LED effect
-    &NumPad,
+    &NumLock,
 
     // The macros plugin adds support for macros
     &Macros,
 
     // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
-    &MouseKeys
-  );
+    &MouseKeys,
 
-  // While we hope to improve this in the future, the NumPad plugin
+    // Benji's customiations
+    &OneShot, &EscapeOneShot, &ShapeShifter, &Macros
+  );
+  ShapeShifter.dictionary = shape_shift_dictionary;
+
+  // While we hope to improve this in the future, the NumLock plugin
   // needs to be explicitly told which keymap layer is your numpad layer
-  NumPad.numPadLayer = NUMPAD;
+  NumLock.numPadLayer = NUMPAD;
 
   // We configure the AlphaSquare effect to use RED letters
   AlphaSquare.color = { 255, 0, 0 };

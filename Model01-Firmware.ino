@@ -104,6 +104,7 @@ enum { MACRO_VERSION_INFO,
        SHIFT_Backtick, SHIFT_Semicolon,     SHIFT_Comma, SHIFT_Period, SHIFT_P, SHIFT_Y, SHIFT_Tab,
        SHIFT_PageUp,   SHIFT_A,             SHIFT_O,     SHIFT_E,      SHIFT_U, SHIFT_I,
        SHIFT_PageDown, SHIFT_Quote,         SHIFT_Q,     SHIFT_J,      SHIFT_K, SHIFT_X, SHIFT_Escape,
+       SHIFT_LeftGui,
        SHIFT_Enter,      SHIFT_F, SHIFT_G, SHIFT_C, SHIFT_R, SHIFT_L, SHIFT_Slash,
                          SHIFT_D, SHIFT_H, SHIFT_T, SHIFT_N, SHIFT_S, SHIFT_Minus,
        SHIFT_Spacebar,   SHIFT_B, SHIFT_M, SHIFT_W, SHIFT_V, SHIFT_Z,
@@ -180,7 +181,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    M(SHIFT_Backtick), M(SHIFT_Semicolon),     M(SHIFT_Comma), M(SHIFT_Period), M(SHIFT_P), M(SHIFT_Y), M(SHIFT_Tab),
    M(SHIFT_PageUp),   M(SHIFT_A),             M(SHIFT_O),     M(SHIFT_E),      M(SHIFT_U), M(SHIFT_I),
    M(SHIFT_PageDown), M(SHIFT_Quote),         M(SHIFT_Q),     M(SHIFT_J),      M(SHIFT_K), M(SHIFT_X), M(SHIFT_Escape),
-   ___, ___,  ___,    ___,
+   ___, ___,  Key_LeftGui,    ___,
    ___,
 
    ___,                 Key_0,      Key_2,      Key_4,      Key_6,      Key_8,      ___,
@@ -270,6 +271,7 @@ static void anyKeyMacro(uint8_t keyState) {
 
  */
 
+bool LEFT_GUI_ON = false;
 
 const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   switch (macroIndex) {
@@ -333,6 +335,13 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   case MACRO_PD_EXCLAMATION:
   if (keyToggledOn(keyState)) {
       return Macros.type(PSTR("!"));
+    }
+    break;
+  case SHIFT_LeftGui:
+    if (keyToggledOn(keyState)) {
+        LEFT_GUI_ON = true;
+    } else if (keyToggledOff(keyState)) {
+        LEFT_GUI_ON = false;
     }
     break;
 
@@ -415,6 +424,9 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     return MACRODOWN(D(LeftShift), T(R), U(LeftShift));
     break;
   case SHIFT_L:
+    if (LEFT_GUI_ON) {
+        return MACRODOWN(D(LeftShift), D(LeftGui), T(L), U(LeftGui), U(LeftShift));
+    }
     return MACRODOWN(D(LeftShift), T(L), U(LeftShift));
     break;
   case SHIFT_Slash:
@@ -425,6 +437,9 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     return MACRODOWN(D(LeftShift), T(D), U(LeftShift));
     break;
   case SHIFT_H:
+    if (LEFT_GUI_ON) {
+        return MACRODOWN(D(LeftShift), D(LeftGui), T(H), U(LeftGui), U(LeftShift));
+    }
     return MACRODOWN(D(LeftShift), T(H), U(LeftShift));
     break;
   case SHIFT_T:

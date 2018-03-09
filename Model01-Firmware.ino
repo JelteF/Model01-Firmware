@@ -72,8 +72,6 @@
 #include "Kaleidoscope-HostPowerManagement.h"
 
 // Benji's customizations
-#include <Kaleidoscope-OneShot.h>
-#include <Kaleidoscope-Escape-OneShot.h>
 #include <Kaleidoscope-ShapeShifter.h>
 #include <Kaleidoscope-Macros.h>
 
@@ -163,7 +161,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
-   OSM(LeftGui),   M(MACRO_PD_ASTERISK), M(MACRO_PD_RIGHT_PAREN), M(MACRO_PD_PLUS), Key_RightBracket, M(MACRO_PD_EXCLAMATION), Key_KeypadNumLock,
+   M(MACRO_ANY),   M(MACRO_PD_ASTERISK), M(MACRO_PD_RIGHT_PAREN), M(MACRO_PD_PLUS), Key_RightBracket, M(MACRO_PD_EXCLAMATION), Key_KeypadNumLock,
    Key_Enter,      Key_F, Key_G, Key_C, Key_R, Key_L, Key_Slash,
                    Key_D, Key_H, Key_T, Key_N, Key_S, Key_Minus,
    Key_Spacebar,   Key_B, Key_M, Key_W, Key_V, Key_Z, M(MACRO_PD_AT),
@@ -203,8 +201,6 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
 };
 
 static const kaleidoscope::ShapeShifter::dictionary_t shape_shift_dictionary[] PROGMEM = {
- {Key_LeftBracket, Key_7},
- {Key_4, Key_1},
  {Key_NoKey, Key_NoKey},
 };
 /* Re-enable astyle's indent enforcement */
@@ -311,19 +307,8 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
       return Macros.type(PSTR("!"));
     }
     break;
-
-  case MACRO_PD_CUT:
-    return MACRODOWN(D(LeftGui), T(X), U(LeftGui));
-    break;
-
-  case MACRO_PD_COPY:
-    return MACRODOWN(D(LeftGui), T(C), U(LeftGui));
-    break;
-
-  case MACRO_PD_PASTE:
-    return MACRODOWN(D(LeftGui), T(V), U(LeftGui));
-    break;
   }
+
   return MACRO_NONE;
 }
 
@@ -432,7 +417,7 @@ void setup() {
     &HostPowerManagement,
 
     // Benji's customiations
-    &OneShot, &EscapeOneShot, &ShapeShifter, &Macros
+    &ShapeShifter, &Macros
   );
   ShapeShifter.dictionary = shape_shift_dictionary;
 

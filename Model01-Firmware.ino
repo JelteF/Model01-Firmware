@@ -424,7 +424,7 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     return MACRODOWN(D(LeftShift), T(R), U(LeftShift));
     break;
   case SHIFT_L:
-    if (LEFT_GUI_ON) {
+    if (kaleidoscope::hid::wasModifierKeyActive(Key_LeftGui)) {
         return MACRODOWN(D(LeftShift), D(LeftGui), T(L), U(LeftGui), U(LeftShift));
     }
     return MACRODOWN(D(LeftShift), T(L), U(LeftShift));
@@ -437,7 +437,7 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     return MACRODOWN(D(LeftShift), T(D), U(LeftShift));
     break;
   case SHIFT_H:
-    if (LEFT_GUI_ON) {
+    if (kaleidoscope::hid::wasModifierKeyActive(Key_LeftGui)) {
         return MACRODOWN(D(LeftShift), D(LeftGui), T(H), U(LeftGui), U(LeftShift));
     }
     return MACRODOWN(D(LeftShift), T(H), U(LeftShift));

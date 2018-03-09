@@ -101,14 +101,17 @@ enum { MACRO_VERSION_INFO,
        MACRO_PD_CUT,
        MACRO_PD_COPY,
        MACRO_PD_PASTE,
-       SHIFT_Backtick, SHIFT_Semicolon,     SHIFT_Comma, SHIFT_Period, SHIFT_P, SHIFT_Y, SHIFT_Tab,
-       SHIFT_PageUp,   SHIFT_A,             SHIFT_O,     SHIFT_E,      SHIFT_U, SHIFT_I,
-       SHIFT_PageDown, SHIFT_Quote,         SHIFT_Q,     SHIFT_J,      SHIFT_K, SHIFT_X, SHIFT_Escape,
-       SHIFT_LeftGui,
-       SHIFT_Enter,      SHIFT_F, SHIFT_G, SHIFT_C, SHIFT_R, SHIFT_L, SHIFT_Slash,
-                         SHIFT_D, SHIFT_H, SHIFT_T, SHIFT_N, SHIFT_S, SHIFT_Minus,
-       SHIFT_Spacebar,   SHIFT_B, SHIFT_M, SHIFT_W, SHIFT_V, SHIFT_Z,
-       MACRO_PD_AT, MACRO_PD_CARET
+       MACRO_PD_AT, MACRO_PD_CARET,
+       MACRO_PD_TWO,
+       MACRO_PD_THREE,
+       MACRO_PD_FOUR,
+       MACRO_PD_FIVE,
+       MACRO_PD_SIX,
+       MACRO_PD_SEVEN,
+       MACRO_PD_EIGHT,
+       MACRO_PD_NINE,
+       MACRO_PD_ZERO,
+       MACRO_PD_MINUS,
      };
 
 //
@@ -153,7 +156,7 @@ enum { MACRO_VERSION_INFO,
   * the numbers 0, 1 and 2.
   */
 
-enum { PDVORAK, SHIFT, FUNCTION, NUMPAD}; // layers
+enum { PDVORAK, FUNCTION, NUMPAD}; // layers
 
 /* This comment temporarily turns off astyle's indent enforcement
  *   so we can make the keymaps actually resemble the physical key layout better
@@ -162,34 +165,19 @@ enum { PDVORAK, SHIFT, FUNCTION, NUMPAD}; // layers
 
 const Key keymaps[][ROWS][COLS] PROGMEM = {
   [PDVORAK] = KEYMAP_STACKED
-  (___,          Key_LeftBracket,         M(MACRO_PD_LEFT_CURLY),     M(MACRO_PD_RIGHT_CURLY),      M(MACRO_PD_LEFT_PAREN), Key_Equals, Key_Backspace,
+  (___,          M(MACRO_PD_TWO),         M(MACRO_PD_THREE),     M(MACRO_PD_FOUR),      M(MACRO_PD_FIVE), M(MACRO_PD_SIX), Key_Backspace,
    Key_Backtick, Key_Semicolon,     Key_Comma, Key_Period, Key_P, Key_Y, Key_Tab,
    Key_PageUp,   Key_A,             Key_O,     Key_E,      Key_U, Key_I,
    Key_PageDown, Key_Quote,         Key_Q,     Key_J,      Key_K, Key_X, Key_Escape,
-   Key_LeftControl, Key_Backspace, Key_LeftGui, ShiftToLayer(SHIFT),
+   Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
-   M(MACRO_ANY),   M(MACRO_PD_ASTERISK), M(MACRO_PD_RIGHT_PAREN), M(MACRO_PD_PLUS), Key_RightBracket, M(MACRO_PD_EXCLAMATION), Key_KeypadNumLock,
+   M(MACRO_ANY),   M(MACRO_PD_SEVEN), M(MACRO_PD_EIGHT), M(MACRO_PD_NINE), M(MACRO_PD_ZERO), M(MACRO_PD_MINUS), Key_KeypadNumLock,
    Key_Enter,      Key_F, Key_G, Key_C, Key_R, Key_L, Key_Slash,
                    Key_D, Key_H, Key_T, Key_N, Key_S, Key_Minus,
    Key_Spacebar,   Key_B, Key_M, Key_W, Key_V, Key_Z, M(MACRO_PD_AT),
-   ShiftToLayer(SHIFT), Key_LeftAlt, Key_Spacebar, Key_RightControl,
+   Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
    ShiftToLayer(FUNCTION)),
-
-  [SHIFT] = KEYMAP_STACKED
-  (___,               Key_7,                  Key_5,          Key_3,           Key_1,      Key_9, ___,
-   M(SHIFT_Backtick), M(SHIFT_Semicolon),     M(SHIFT_Comma), M(SHIFT_Period), M(SHIFT_P), M(SHIFT_Y), M(SHIFT_Tab),
-   M(SHIFT_PageUp),   M(SHIFT_A),             M(SHIFT_O),     M(SHIFT_E),      M(SHIFT_U), M(SHIFT_I),
-   M(SHIFT_PageDown), M(SHIFT_Quote),         M(SHIFT_Q),     M(SHIFT_J),      M(SHIFT_K), M(SHIFT_X), M(SHIFT_Escape),
-   ___, ___,  Key_LeftGui,    ___,
-   ___,
-
-   ___,                 Key_0,      Key_2,      Key_4,      Key_6,      Key_8,      ___,
-   M(SHIFT_Enter),      M(SHIFT_F), M(SHIFT_G), M(SHIFT_C), M(SHIFT_R), M(SHIFT_L), M(SHIFT_Slash),
-                        M(SHIFT_D), M(SHIFT_H), M(SHIFT_T), M(SHIFT_N), M(SHIFT_S), M(SHIFT_Minus),
-   M(SHIFT_Spacebar),   M(SHIFT_B), M(SHIFT_M), M(SHIFT_W), M(SHIFT_V), M(SHIFT_Z), M(MACRO_PD_CARET),
-   ___, ___, ___, ___,
-   ___),
 
   [FUNCTION] =  KEYMAP_STACKED
   (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           XXX,
@@ -271,7 +259,12 @@ static void anyKeyMacro(uint8_t keyState) {
 
  */
 
-bool LEFT_GUI_ON = false;
+bool wasShiftActive() {
+    return kaleidoscope::hid::wasModifierKeyActive(Key_LeftShift) || kaleidoscope::hid::wasModifierKeyActive(Key_RightShift);
+}
+
+#define MACROSHIFT(shifted, unshifted) (wasShiftActive()? MACRODOWN(T(shifted)) : keyToggledOn(keyState) ? Macros.type(PSTR(unshifted)) : MACRO_NONE)
+
 
 const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   switch (macroIndex) {
@@ -337,144 +330,27 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
       return Macros.type(PSTR("!"));
     }
     break;
-  case SHIFT_LeftGui:
-    if (keyToggledOn(keyState)) {
-        LEFT_GUI_ON = true;
-    } else if (keyToggledOff(keyState)) {
-        LEFT_GUI_ON = false;
-    }
-    break;
 
-  case SHIFT_Backtick:
-    return MACRODOWN(D(LeftShift), T(Backtick), U(LeftShift));
-    break;
-  case SHIFT_Semicolon:
-    return MACRODOWN(D(LeftShift), T(Semicolon), U(LeftShift));
-    break;
-  case SHIFT_Comma:
-    return MACRODOWN(D(LeftShift), T(Comma), U(LeftShift));
-    break;
-  case SHIFT_Period:
-    return MACRODOWN(D(LeftShift), T(Period), U(LeftShift));
-    break;
-  case SHIFT_P:
-    return MACRODOWN(D(LeftShift), T(P), U(LeftShift));
-    break;
-  case SHIFT_Y:
-    return MACRODOWN(D(LeftShift), T(Y), U(LeftShift));
-    break;
-  case SHIFT_Tab:
-    return MACRODOWN(D(LeftShift), T(Tab), U(LeftShift));
-    break;
-
-  case SHIFT_PageUp:
-    return MACRODOWN(D(LeftShift), T(PageUp), U(LeftShift));
-    break;
-  case SHIFT_A:
-    return MACRODOWN(D(LeftShift), T(A), U(LeftShift));
-    break;
-  case SHIFT_O:
-    return MACRODOWN(D(LeftShift), T(O), U(LeftShift));
-    break;
-  case SHIFT_E:
-    return MACRODOWN(D(LeftShift), T(E), U(LeftShift));
-    break;
-  case SHIFT_U:
-    return MACRODOWN(D(LeftShift), T(U), U(LeftShift));
-    break;
-  case SHIFT_I:
-    return MACRODOWN(D(LeftShift), T(I), U(LeftShift));
-    break;
-
-  case SHIFT_PageDown:
-    return MACRODOWN(D(LeftShift), T(PageDown), U(LeftShift));
-    break;
-  case SHIFT_Quote:
-    return MACRODOWN(D(LeftShift), T(Quote), U(LeftShift));
-    break;
-  case SHIFT_Q:
-    return MACRODOWN(D(LeftShift), T(Q), U(LeftShift));
-    break;
-  case SHIFT_J:
-    return MACRODOWN(D(LeftShift), T(J), U(LeftShift));
-    break;
-  case SHIFT_K:
-    return MACRODOWN(D(LeftShift), T(K), U(LeftShift));
-    break;
-  case SHIFT_X:
-    return MACRODOWN(D(LeftShift), T(X), U(LeftShift));
-    break;
-  case SHIFT_Escape:
-    return MACRODOWN(D(LeftShift), T(Escape), U(LeftShift));
-    break;
-
-  case SHIFT_Enter:
-    return MACRODOWN(D(LeftShift), T(Enter), U(LeftShift));
-    break;
-  case SHIFT_F:
-    return MACRODOWN(D(LeftShift), T(F), U(LeftShift));
-    break;
-  case SHIFT_G:
-    return MACRODOWN(D(LeftShift), T(G), U(LeftShift));
-    break;
-  case SHIFT_C:
-    return MACRODOWN(D(LeftShift), T(C), U(LeftShift));
-    break;
-  case SHIFT_R:
-    return MACRODOWN(D(LeftShift), T(R), U(LeftShift));
-    break;
-  case SHIFT_L:
-    if (kaleidoscope::hid::wasModifierKeyActive(Key_LeftGui)) {
-        return MACRODOWN(D(LeftShift), D(LeftGui), T(L), U(LeftGui), U(LeftShift));
-    }
-    return MACRODOWN(D(LeftShift), T(L), U(LeftShift));
-    break;
-  case SHIFT_Slash:
-    return MACRODOWN(D(LeftShift), T(Slash), U(LeftShift));
-    break;
-
-  case SHIFT_D:
-    return MACRODOWN(D(LeftShift), T(D), U(LeftShift));
-    break;
-  case SHIFT_H:
-    if (kaleidoscope::hid::wasModifierKeyActive(Key_LeftGui)) {
-        return MACRODOWN(D(LeftShift), D(LeftGui), T(H), U(LeftGui), U(LeftShift));
-    }
-    return MACRODOWN(D(LeftShift), T(H), U(LeftShift));
-    break;
-  case SHIFT_T:
-    return MACRODOWN(D(LeftShift), T(T), U(LeftShift));
-    break;
-  case SHIFT_N:
-    return MACRODOWN(D(LeftShift), T(N), U(LeftShift));
-    break;
-  case SHIFT_S:
-    return MACRODOWN(D(LeftShift), T(S), U(LeftShift));
-    break;
-  case SHIFT_Minus:
-    return MACRODOWN(D(LeftShift), T(Minus), U(LeftShift));
-    break;
-
-  case SHIFT_Spacebar:
-    return MACRODOWN(D(LeftShift), T(Spacebar), U(LeftShift));
-    break;
-  case SHIFT_B:
-    return MACRODOWN(D(LeftShift), T(B), U(LeftShift));
-    break;
-  case SHIFT_M:
-    return MACRODOWN(D(LeftShift), T(M), U(LeftShift));
-    break;
-  case SHIFT_W:
-    return MACRODOWN(D(LeftShift), T(W), U(LeftShift));
-    break;
-  case SHIFT_V:
-    return MACRODOWN(D(LeftShift), T(V), U(LeftShift));
-    break;
-  case SHIFT_Z:
-    return MACRODOWN(D(LeftShift), T(Z), U(LeftShift));
-    break;
-
-
+  case MACRO_PD_TWO:
+    return MACROSHIFT(7, "[");
+  case MACRO_PD_THREE:
+    return MACROSHIFT(5, "{");
+  case MACRO_PD_FOUR:
+    return MACROSHIFT(3, "}");
+  case MACRO_PD_FIVE:
+    return MACROSHIFT(1, "(");
+  case MACRO_PD_SIX:
+    return MACROSHIFT(9, "=");
+  case MACRO_PD_SEVEN:
+    return MACROSHIFT(0, "*");
+  case MACRO_PD_EIGHT:
+    return MACROSHIFT(2, ")");
+  case MACRO_PD_NINE:
+    return MACROSHIFT(4, "+");
+  case MACRO_PD_ZERO:
+    return MACROSHIFT(6, "]");
+  case MACRO_PD_MINUS:
+    return MACROSHIFT(8, "!");
   }
 
   return MACRO_NONE;

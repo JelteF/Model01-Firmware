@@ -263,7 +263,20 @@ bool wasShiftActive() {
     return kaleidoscope::hid::wasModifierKeyActive(Key_LeftShift) || kaleidoscope::hid::wasModifierKeyActive(Key_RightShift);
 }
 
-#define MACROSHIFT(shifted, unshifted) (wasShiftActive()? MACRODOWN(T(shifted)) : keyToggledOn(keyState) ? Macros.type(PSTR(unshifted)) : MACRO_NONE)
+bool wasLeftGuiActive() {
+    return kaleidoscope::hid::wasModifierKeyActive(Key_LeftGui);
+}
+
+#define MACROSHIFT(shifted, unshifted, normalKB) (\
+  wasShiftActive()\
+  ? wasLeftGuiActive() \
+    ? MACRODOWN(D(LeftShift), D(LeftGui), T(normalKB), U(LeftGui), U(LeftShift))\
+    : MACRODOWN(T(shifted))\
+  : wasLeftGuiActive() \
+    ? MACRODOWN(D(LeftGui), T(normalKB), U(LeftGui))\
+    : keyToggledOn(keyState) \
+      ? Macros.type(PSTR(unshifted)) : MACRO_NONE\
+)
 
 
 const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
@@ -332,25 +345,25 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     break;
 
   case MACRO_PD_TWO:
-    return MACROSHIFT(7, "[");
+    return MACROSHIFT(7, "[", 7);
   case MACRO_PD_THREE:
-    return MACROSHIFT(5, "{");
+    return MACROSHIFT(5, "{", 5);
   case MACRO_PD_FOUR:
-    return MACROSHIFT(3, "}");
+    return MACROSHIFT(3, "}", 5);
   case MACRO_PD_FIVE:
-    return MACROSHIFT(1, "(");
+    return MACROSHIFT(1, "(", 3);
   case MACRO_PD_SIX:
-    return MACROSHIFT(9, "=");
+    return MACROSHIFT(9, "=", 1);
   case MACRO_PD_SEVEN:
-    return MACROSHIFT(0, "*");
+    return MACROSHIFT(0, "*", 9);
   case MACRO_PD_EIGHT:
-    return MACROSHIFT(2, ")");
+    return MACROSHIFT(2, ")", 0);
   case MACRO_PD_NINE:
-    return MACROSHIFT(4, "+");
+    return MACROSHIFT(4, "+", 2);
   case MACRO_PD_ZERO:
-    return MACROSHIFT(6, "]");
+    return MACROSHIFT(6, "]", 4);
   case MACRO_PD_MINUS:
-    return MACROSHIFT(8, "!");
+    return MACROSHIFT(8, "!", 6);
   }
 
   return MACRO_NONE;

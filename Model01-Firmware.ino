@@ -165,7 +165,7 @@ enum { PDVORAK, FUNCTION, NUMPAD}; // layers
 
 const Key keymaps[][ROWS][COLS] PROGMEM = {
   [PDVORAK] = KEYMAP_STACKED
-  (___,          M(MACRO_PD_TWO),         M(MACRO_PD_THREE),     M(MACRO_PD_FOUR),      M(MACRO_PD_FIVE), M(MACRO_PD_SIX), Key_Backspace,
+  (___,          M(MACRO_PD_TWO),         M(MACRO_PD_THREE),     M(MACRO_PD_FOUR),      M(MACRO_PD_FIVE), M(MACRO_PD_SIX), Key_LEDEffectNext,
    Key_Backtick, Key_Semicolon,     Key_Comma, Key_Period, Key_P, Key_Y, Key_Tab,
    Key_PageUp,   Key_A,             Key_O,     Key_E,      Key_U, Key_I,
    Key_PageDown, Key_Quote,         Key_Q,     Key_J,      Key_K, Key_X, Key_Escape,

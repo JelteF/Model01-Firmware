@@ -160,14 +160,14 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    Key_Backtick, Key_Semicolon,     Key_Comma, Key_Period, Key_P, Key_Y, Key_Tab,
    Key_PageUp,   Key_A,         Key_O,     Key_E,      Key_U, Key_I,
    Key_PageDown, Key_Quote, Key_Q,     Key_J,      Key_K, Key_X, Key_Escape,
-   Key_LeftShift, Key_Backspace, Key_LeftGui, Key_LeftControl,
+   Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
    OSM(LeftGui),   M(MACRO_PD_ASTERISK), M(MACRO_PD_RIGHT_PAREN), M(MACRO_PD_PLUS), Key_RightBracket, M(MACRO_PD_EXCLAMATION), Key_KeypadNumLock,
    Key_Enter,      Key_F, Key_G, Key_C, Key_R, Key_L, Key_Slash,
                    Key_D, Key_H, Key_T, Key_N, Key_S, Key_Minus,
    Key_Spacebar,   Key_B, Key_M, Key_W, Key_V, Key_Z, M(MACRO_PD_AT),
-   Key_RightControl, Key_LeftAlt, Key_Spacebar, Key_RightShift,
+   Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
    ShiftToLayer(FUNCTION)),
 
   [FUNCTION] =  KEYMAP_STACKED

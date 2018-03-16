@@ -100,6 +100,8 @@ enum { MACRO_VERSION_INFO,
        MACRO_PD_EXCLAMATION,
        MACRO_PD_AMPERSAND,
        MACRO_PD_PERCENT,
+       MACRO_PD_DOLLAR,
+       MACRO_PD_HASHTAG,
        MACRO_PD_CUT,
        MACRO_PD_COPY,
        MACRO_PD_PASTE,
@@ -190,8 +192,8 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    ___,
 
    Consumer_ScanPreviousTrack, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
-   Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    M(MACRO_PD_AMPERSAND), M(MACRO_PD_PERCENT), Key_Find,
-                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  ___,              ___,
+   Consumer_PlaySlashPause,    Consumer_ScanNextTrack, M(MACRO_PD_DOLLAR),       M(MACRO_PD_HASHTAG),      M(MACRO_PD_AMPERSAND), M(MACRO_PD_PERCENT), Key_F12,
+                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  M(MACRO_AT),              M(MACRO_CARET),
    Key_PcApplication,          Key_Mute,               Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
    Key_RightShift, ___, Key_Enter, ___,
    ___),
@@ -355,6 +357,18 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   case MACRO_PD_PERCENT:
   if (keyToggledOn(keyState)) {
       return Macros.type(PSTR("%"));
+    }
+    break;
+
+  case MACRO_PD_DOLLAR:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("$"));
+    }
+    break;
+
+  case MACRO_PD_HASHTAG:
+  if (keyToggledOn(keyState)) {
+      return Macros.type(PSTR("#"));
     }
     break;
 

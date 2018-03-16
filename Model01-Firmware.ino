@@ -193,7 +193,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
 
    Consumer_ScanPreviousTrack, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, M(MACRO_PD_DOLLAR),       M(MACRO_PD_HASHTAG),      M(MACRO_PD_AMPERSAND), M(MACRO_PD_PERCENT), Key_F12,
-                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  M(MACRO_AT),              M(MACRO_CARET),
+                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  M(MACRO_PD_AT),              M(MACRO_PD_CARET),
    Key_PcApplication,          Key_Mute,               Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
    Key_RightShift, ___, Key_Enter, ___,
    ___),
